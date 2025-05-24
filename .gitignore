@@ -1,0 +1,6 @@
+# ignore the documentation markdown files
+app.md
+docu.md
+pres.md
+research.md
+task.md
