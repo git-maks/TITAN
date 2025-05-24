@@ -1,0 +1,6 @@
+[theme]
+primaryColor="#4CAF50" # A shade of green, can be adjusted
+backgroundColor="#1E1E1E" # Dark grey for background
+secondaryBackgroundColor="#2C2C2C" # Slightly lighter grey for elements
+textColor="#FFFFFF" # White text for contrast
+font="sans serif"
