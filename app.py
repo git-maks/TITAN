@@ -247,21 +247,6 @@ st.sidebar.markdown(f"<p class='sidebar-status-text'><strong>System Status:</str
 st.sidebar.markdown(f"<p class='sidebar-status-text'><strong>Last Update:</strong> {st.session_state.last_refresh_time}</p>", unsafe_allow_html=True)
 st.sidebar.markdown(f"<p class='sidebar-status-text'><strong>Signal Strength:</strong> <span style='color:lightgreen;'>Strong</span></p>", unsafe_allow_html=True)
 
-# Custom CSS to attempt to reduce top padding (This block seems redundant with the one at the top, will remove if confirmed)
-# st.markdown("""
-# <style>
-#     /* Main app container */
-#     .main .block-container {
-#         padding-top: 1rem; /* Default is usually more, reduce it */
-#     }
-#     /* Sidebar specific adjustments if needed */
-#     .stSidebar .stMarkdown h3 {
-#         margin-top: 0.5rem; /* Reduce margin above the H3 title in sidebar */
-#         padding-top: 0rem;
-#     }
-# </style>
-# """, unsafe_allow_html=True)
-
 # Refresh button - moved to main area, will be added to each page or a common spot
 if app_mode == "🗺️ Map Overview":
     if st.button("🔄 Refresh Network Status"):
@@ -304,7 +289,9 @@ if app_mode == "🗺️ Map Overview":
             "Airport Control Tower": "A", # A for Airport
             "Emergency Operation Center": "E", # E for Emergency
             "Other": "O"                 # O for Other
-        }        # Debug - print unique types to verify mapping
+        }  
+        
+        # Debug - print unique types to verify mapping
         print("Unique types in data:", df_channels['type'].str.strip().unique())
         print("Keys in symbol_map:", list(symbol_map.keys()))
         
@@ -325,7 +312,7 @@ if app_mode == "🗺️ Map Overview":
         # Hybrid approach: add both markers and text for better visibility
         for channel_type, group_by_type in df_channels.groupby('type'):
             channel_type = channel_type.strip()  # Ensure stripped for lookup
-            symbol_for_type = symbol_map.get(channel_type, '+')  # Get Unicode symbol
+            symbol_for_type = symbol_map.get(channel_type, '+')  # Get ASCII symbol
             size_for_type = size_map.get(channel_type, 14)  # Get size
             
             for status, group_by_status_and_type in group_by_type.groupby('simplified_status'):
@@ -334,7 +321,7 @@ if app_mode == "🗺️ Map Overview":
                 lats = group_by_status_and_type['lat'].tolist()
                 lons = group_by_status_and_type['lon'].tolist()
                 hover_names = group_by_status_and_type['name'].tolist()
-                symbols = [symbol_for_type] * len(group_by_status_and_type)  # Unicode symbols
+                symbols = [symbol_for_type] * len(group_by_status_and_type)  # ASCII letters
                 
                 custom_data_list = []
                 for _idx, row in group_by_status_and_type.iterrows():
@@ -343,7 +330,9 @@ if app_mode == "🗺️ Map Overview":
                         row['simplified_status'], 
                         row['last_updated'], 
                         row['notes']
-                    ])                # First, add a marker for the background shape
+                    ])                
+                
+                # First, add a marker for the background shape
                 fig.add_trace(go.Scattermapbox(
                     lat=lats,
                     lon=lons,
@@ -383,10 +372,12 @@ if app_mode == "🗺️ Map Overview":
                     showlegend=False
                 ))
 
-        # Add legend items for infrastructure types - also using text mode with Unicode
+        # Add legend items for infrastructure types
         legend_items_symbols = {}
         for channel_type in df_channels['type'].str.strip().unique():
-            if channel_type not in legend_items_symbols:                symbol_for_legend = symbol_map.get(channel_type, '+')
+            if channel_type not in legend_items_symbols:
+                symbol_for_legend = symbol_map.get(channel_type, '+')
+                
                 # Background marker for legend item
                 fig.add_trace(go.Scattermapbox(
                     lat=[None], lon=[None],
@@ -412,7 +403,8 @@ if app_mode == "🗺️ Map Overview":
                         family="Arial Black, sans-serif",
                         weight=700,
                     ),
-                    name=f"{channel_type}",                    legendgroup="Symbols",
+                    name=f"{channel_type}",
+                    legendgroup="Symbols",
                     legendgrouptitle_text="Infrastructure Type",
                     showlegend=False  # Don't show duplicate entry
                 ))
